@@ -15,21 +15,15 @@ import (
 var DB *gorm.DB
 
 func ConnectDatabase() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
+	// Load .env only for local development
+	_ = godotenv.Load()
+
+	dbURL := os.Getenv("DATABASE_URL")
+	if dbURL == "" {
+		log.Fatal("DATABASE_URL is not set")
 	}
 
-	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable",
-		os.Getenv("DB_HOST"),
-		os.Getenv("DB_USER"),
-		os.Getenv("DB_PASSWORD"),
-		os.Getenv("DB_NAME"),
-		os.Getenv("DB_PORT"),
-	)
-
-	database, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
-
+	database, err := gorm.Open(postgres.Open(dbURL), &gorm.Config{})
 	if err != nil {
 		log.Fatal("Failed to connect to database:", err)
 	}
@@ -42,11 +36,10 @@ func ConnectDatabase() {
 		&models.Product{},
 		&models.ProgressPhoto{},
 	)
-
 	if err != nil {
 		log.Fatal("Migration failed:", err)
 	}
 
 	DB = database
-	fmt.Println("Database connection successful and migrated.")
+	fmt.Println("Database connected and migrated successfully.")
 }
