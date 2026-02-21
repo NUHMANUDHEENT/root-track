@@ -3,6 +3,8 @@ package routes
 import (
 	"roottrack-backend/controllers"
 	"roottrack-backend/middleware"
+	"roottrack-backend/repositories"
+	"roottrack-backend/services"
 	"time"
 
 	"github.com/gin-contrib/cors"
@@ -25,10 +27,19 @@ func SetupRouter() *gin.Engine {
 		MaxAge:           12 * time.Hour,
 	}))
 
+	// Initialize Repositories and Services
+	routineRepo := repositories.RoutineRepository{}
+	userRepo := repositories.UserRepository{}
+	notificationService := &services.NotificationService{RoutineRepo: routineRepo}
+
 	// Initialize Controllers
-	authCtrl := &controllers.AuthController{}
-	userCtrl := &controllers.UserController{}
-	routineCtrl := &controllers.RoutineController{}
+	authCtrl := &controllers.AuthController{
+		UserRepo:            userRepo,
+		RoutineRepo:         routineRepo,
+		NotificationService: notificationService,
+	}
+	userCtrl := &controllers.UserController{UserRepo: userRepo}
+	routineCtrl := &controllers.RoutineController{Repo: routineRepo}
 	sheddingCtrl := &controllers.SheddingController{}
 	productCtrl := &controllers.ProductController{}
 	photoCtrl := &controllers.PhotoController{}
@@ -53,8 +64,8 @@ func SetupRouter() *gin.Engine {
 		protected.Use(middleware.AuthMiddleware())
 		{
 			// User Routes
-			protected.GET("/user/me", userCtrl.GetMe)
 			protected.PUT("/user/update", userCtrl.Update)
+			protected.POST("/push-tokens", userCtrl.UpdatePushToken)
 
 			// Routine Routes
 			protected.POST("/routines", routineCtrl.Create)

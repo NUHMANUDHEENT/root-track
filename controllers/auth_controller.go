@@ -4,13 +4,16 @@ import (
 	"net/http"
 	"roottrack-backend/models"
 	"roottrack-backend/repositories"
+	"roottrack-backend/services"
 	"roottrack-backend/utils"
 
 	"github.com/gin-gonic/gin"
 )
 
 type AuthController struct {
-	UserRepo repositories.UserRepository
+	UserRepo            repositories.UserRepository
+	RoutineRepo         repositories.RoutineRepository
+	NotificationService *services.NotificationService
 }
 
 func (ctrl *AuthController) Register(c *gin.Context) {
@@ -72,6 +75,11 @@ func (ctrl *AuthController) Login(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate token"})
 		return
+	}
+
+	// Trigger push notification check in a goroutine
+	if ctrl.NotificationService != nil {
+		go ctrl.NotificationService.CheckAndNotify(user)
 	}
 
 	c.JSON(http.StatusOK, gin.H{"token": token, "user": user})

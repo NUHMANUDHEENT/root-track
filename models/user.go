@@ -8,13 +8,13 @@ import (
 )
 
 type User struct {
-	ID           uuid.UUID `gorm:"type:uuid;primaryKey" json:"id"`
-	Name         string    `json:"name"`
-	Email        string    `gorm:"unique;not null" json:"email"`
-	PasswordHash string    `gorm:"not null" json:"-"`
-	CreatedAt    time.Time `json:"created_at"`
-	UpdatedAt    time.Time `json:"updated_at"`
-
+	ID            uuid.UUID `gorm:"type:uuid;primaryKey" json:"id"`
+	Name          string    `json:"name"`
+	Email         string    `gorm:"unique;not null" json:"email"`
+	PasswordHash  string    `gorm:"not null" json:"-"`
+	CreatedAt     time.Time `json:"created_at"`
+	UpdatedAt     time.Time `json:"updated_at"`
+	ExpoPushToken string    `json:"expo_push_token"`
 	Routines       []Routine       `gorm:"foreignKey:UserID" json:"-"`
 	SheddingLogs   []SheddingLog   `gorm:"foreignKey:UserID" json:"-"`
 	Products       []Product       `gorm:"foreignKey:UserID" json:"-"`
