@@ -63,6 +63,7 @@ func (s *NotificationService) CheckAndNotify(user *models.User) {
 	}
 }
 
+
 func (s *NotificationService) SendPushNotification(token, title, body string) error {
 	url := "https://exp.host/--/api/v2/push/send"
 
@@ -87,6 +88,5 @@ func (s *NotificationService) SendPushNotification(token, title, body string) er
 	if resp.StatusCode != http.StatusOK {
 		return fmt.Errorf("expo API returned status: %s", resp.Status)
 	}
-
 	return nil
 }

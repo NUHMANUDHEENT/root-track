@@ -33,3 +33,11 @@ func (r *UserRepository) FindByID(id uuid.UUID) (*models.User, error) {
 func (r *UserRepository) UpdateUser(user *models.User) error {
 	return config.DB.Save(user).Error
 }
+
+func (r *UserRepository) GetAllUsers() ([]models.User, error) {
+	var users []models.User
+	if err := config.DB.Find(&users).Error; err != nil {
+		return nil, err
+	}
+	return users, nil
+}

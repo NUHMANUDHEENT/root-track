@@ -50,6 +50,14 @@ func SetupRouter() *gin.Engine {
 		PhotoRepo:    photoCtrl.Repo,
 	}
 
+	// Start notification worker
+	notificationWorker := &services.NotificationWorker{
+		UserRepo:        userRepo,
+		NotificationSvc: notificationService,
+		WorkerLimit:     10,
+	}
+	go notificationWorker.Start()
+
 	api := r.Group("/api")
 	{
 		// Auth Routes
