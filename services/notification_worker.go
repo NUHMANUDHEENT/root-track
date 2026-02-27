@@ -16,7 +16,7 @@ type NotificationWorker struct {
 }
 
 func (w *NotificationWorker) Start() {
-	ticker := time.NewTicker(10 * time.Minute)
+	ticker := time.NewTicker(24 * time.Hour)
 
 	fmt.Println("Notification worker started...")
 
